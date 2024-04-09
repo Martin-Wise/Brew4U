@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel
 from src.api import auth
 from enum import Enum
+import sqlalchemy
+from src import database as db
 
 router = APIRouter(
     prefix="/carts",
@@ -105,5 +107,31 @@ class CartCheckout(BaseModel):
 @router.post("/{cart_id}/checkout")
 def checkout(cart_id: int, cart_checkout: CartCheckout):
     """ """
+    with db.engine.begin() as connection:
+        result = connection.execute(sqlalchemy.text("SELECT gold, num_green_potions FROM global_inventory ORDER BY created_at DESC LIMIT 1"))
+        current_data = result.fetchone()
+        
+        current_gold = current_data['gold']
+        current_num_green_potions = current_data['num_green_potions']
 
+        new_gold_ammount = current_gold + 50
+        new_num_green_potions = current_num_green_potions - 1
+
+        update_query = sqlalchemy.text(
+            """
+            UPDATE global_inventory
+            SET gold = :new_gold_amount,
+                num_green_potions = :new_num_green_potions
+            """
+        )
+
+        update_params = {
+            'new_gold_amount': new_gold_ammount,
+            'new_num_green_ml': new_num_green_potions
+        }
+        connection.execute(update_query, **update_params)
+    
     return {"total_potions_bought": 1, "total_gold_paid": 50}
+
+
+
