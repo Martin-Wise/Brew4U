@@ -37,7 +37,7 @@ def get_bottle_plan():
 
     # Initial logic: bottle all barrels into red potions.
     with db.engine.begin() as connection:
-        result = connection.execute("SELECT num_green_ml FROM global_inventory ORDER BY created_at DESC LIMIT 1")
+        result = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM global_inventory ORDER BY created_at DESC LIMIT 1"))
     
     num_green_ml = result.fetchone()
 
@@ -58,7 +58,7 @@ if __name__ == "__main__":
 
 def transfer_to_global_inventory(potions: PotionInventory):
     with db.engine.begin() as connection:
-        result = connection.execute("SELECT num_green_potions, num_green_ml FROM global_inventory ORDER BY created_at DESC LIMIT 1")
+        result = connection.execute(sqlalchemy.text("SELECT num_green_potions, num_green_ml FROM global_inventory ORDER BY created_at DESC LIMIT 1"))
         current_data = result.fetchone()
         
         current_num_green_potions = current_data['num_green_potions']

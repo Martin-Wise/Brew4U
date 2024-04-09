@@ -62,7 +62,7 @@ def get_num_green_potions():
 
 def transfer_to_global_inventory(barrel: Barrel):
     with db.engine.begin() as connection:
-        result = connection.execute("SELECT gold, num_green_ml FROM global_inventory ORDER BY created_at DESC LIMIT 1")
+        result = connection.execute(sqlalchemy.text("SELECT gold, num_green_ml FROM global_inventory ORDER BY created_at DESC LIMIT 1"))
         current_data = result.fetchone()
         
         current_gold = current_data['gold']
