@@ -35,34 +35,40 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
     print(wholesale_catalog)
 
     num_green_potions = get_num_green_potions()
-    
+    num_gold = get_gold()
     if num_green_potions < 10:
         for barrel in wholesale_catalog:
-            if barrel.sku == "SMALL_GREEN_BARREL" and barrel.quantity > 0:
+            if barrel.sku == "SMALL_GREEN_BARREL" and barrel.quantity > 0 and num_gold > barrel.price:
                 return [
                     {
-                        "sku": "SMALL_GREEN_BARREL",
+                        "sku": barrel.sku,
                         "quantity": 1,
                     }
                 ]
-            
-    else :
-        return []
+            else:
+                return []
 
 def get_num_green_potions():
     with db.engine.begin() as connection:
-        """I want the most recent cound of green potions that I have 
-        so I sort the green potions by the time they were added and limit the result to one potion"""
-        result = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory ORDER BY created_at DESC LIMIT 1"))
-        num_green_potions = result.fetchone()
-        if num_green_potions:
-            return num_green_potions['num_green_potions']
+        result = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory"))
+        num_green_potions = result[0]
+        if num_green_potions > 0:
+            return num_green_potions
+        else:
+            return 0
+
+def get_gold():
+    with db.engine.begin() as connection:
+        result = connection.execute(sqlalchemy.text("SELECT gold FROM global_inventory"))
+        num_gold = result[0]
+        if num_gold > 0:
+            return num_gold
         else:
             return 0
 
 def transfer_to_global_inventory(barrel: Barrel):
     with db.engine.begin() as connection:
-        result = connection.execute(sqlalchemy.text("SELECT gold, num_green_ml FROM global_inventory ORDER BY created_at DESC LIMIT 1"))
+        result = connection.execute(sqlalchemy.text("SELECT gold, num_green_ml"))
         current_data = result.fetchone()
         
         current_gold = current_data['gold']
