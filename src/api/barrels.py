@@ -68,13 +68,21 @@ def get_gold():
         else:
             return 0
 
+def get_green_ml():
+    with db.engine.begin() as connection:
+        result = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM global_inventory"))
+        num_green_ml = result.fetchone()[0]
+        print("num_green_ml: ", num_green_ml)
+        if num_green_ml > 0:
+            return num_green_ml
+        else:
+            return 0      
+
 def transfer_to_global_inventory(barrel: Barrel):
     with db.engine.begin() as connection:
-        result = connection.execute(sqlalchemy.text("SELECT gold, num_green_ml FROM global_inventory"))
-        current_data = result.fetchone()
         
-        current_gold = current_data['gold']
-        current_num_green_ml = current_data['num_green_ml']
+        current_gold = get_gold()
+        current_num_green_ml = get_green_ml()
 
         new_gold_ammount = current_gold - barrel.price
         new_num_green_ml = current_num_green_ml + barrel.ml_per_barrel
