@@ -51,7 +51,7 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
 def get_num_green_potions():
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory"))
-        num_green_potions = result[0]
+        num_green_potions = result.fetchone()[0]
         if num_green_potions > 0:
             return num_green_potions
         else:
@@ -60,7 +60,7 @@ def get_num_green_potions():
 def get_gold():
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text("SELECT gold FROM global_inventory"))
-        num_gold = result[0]
+        num_gold = result.fetchone()[0]
         if num_gold > 0:
             return num_gold
         else:
