@@ -52,6 +52,7 @@ def get_num_green_potions():
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory"))
         num_green_potions = result.fetchone()[0]
+        print("num_green_potions: " + num_green_potions)
         if num_green_potions > 0:
             return num_green_potions
         else:
@@ -61,6 +62,7 @@ def get_gold():
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text("SELECT gold FROM global_inventory"))
         num_gold = result.fetchone()[0]
+        print("num_gold: " + num_gold)
         if num_gold > 0:
             return num_gold
         else:
@@ -68,7 +70,7 @@ def get_gold():
 
 def transfer_to_global_inventory(barrel: Barrel):
     with db.engine.begin() as connection:
-        result = connection.execute(sqlalchemy.text("SELECT gold, num_green_ml"))
+        result = connection.execute(sqlalchemy.text("SELECT gold, num_green_ml FROM global_inventory"))
         current_data = result.fetchone()
         
         current_gold = current_data['gold']
