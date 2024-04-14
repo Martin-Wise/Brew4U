@@ -4,7 +4,6 @@ from pydantic import BaseModel
 from src.api import auth
 import sqlalchemy
 from src import database as db
-import barrels
 
 router = APIRouter(
     prefix="/bottler",
@@ -56,11 +55,32 @@ def get_bottle_plan():
 if __name__ == "__main__":
     print(get_bottle_plan())
 
+def get_num_green_potions():
+    with db.engine.begin() as connection:
+        result = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory"))
+        num_green_potions = result.fetchone()[0]
+        print("num_green_potions: ", num_green_potions)
+        if num_green_potions > 0:
+            return num_green_potions
+        else:
+            return 0
+
+def get_green_ml():
+    with db.engine.begin() as connection:
+        result = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM global_inventory"))
+        num_green_ml = result.fetchone()[0]
+        print("num_green_ml: ", num_green_ml)
+        if num_green_ml > 0:
+            return num_green_ml
+        else:
+            return 0  
+
+
 def transfer_to_global_inventory(potion: PotionInventory):
     with db.engine.begin() as connection:
         
-        current_num_green_ml = barrels.get_green_ml()
-        current_num_green_potions = barrels.get_num_green_potions()
+        current_num_green_ml = get_green_ml()
+        current_num_green_potions = get_num_green_potions()
 
         new_num_green_potions = current_num_green_potions - potion.quantity
         new_num_green_ml = current_num_green_ml - (100 * potion.quantity )
