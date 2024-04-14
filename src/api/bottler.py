@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from src.api import auth
 import sqlalchemy
 from src import database as db
+import barrels
 
 router = APIRouter(
     prefix="/bottler",
@@ -37,15 +38,14 @@ def get_bottle_plan():
 
     # Initial logic: bottle all barrels into red potions.
     with db.engine.begin() as connection:
-        result = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM global_inventory ORDER BY created_at DESC LIMIT 1"))
-    
-    num_green_ml = result.fetchone()
+        result = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM global_inventory"))
+        num_green_ml = result.fetchone()[0]
 
     if num_green_ml > 100:
         quant_green : int = num_green_ml / 100
         return [
             {
-                "potion_type": [0, 0, 100, 0],
+                "potion_type": [0, 100, 0, 0],
                 "quantity": quant_green
             }
         ]
@@ -56,27 +56,13 @@ def get_bottle_plan():
 if __name__ == "__main__":
     print(get_bottle_plan())
 
-def transfer_to_global_inventory(potions: PotionInventory):
+def transfer_to_global_inventory(potion: PotionInventory):
     with db.engine.begin() as connection:
-        result = connection.execute(sqlalchemy.text("SELECT num_green_potions, num_green_ml FROM global_inventory ORDER BY created_at DESC LIMIT 1"))
-        current_data = result.fetchone()
         
-        current_num_green_potions = current_data['num_green_potions']
-        current_num_green_ml = current_data['num_green_ml']
+        current_num_green_ml = barrels.get_green_ml()
+        current_num_green_potions = barrels.get_num_green_potions()
 
-        new_num_green_potions = current_num_green_potions + potions.quantity
-        new_num_green_ml = current_num_green_ml - (100 * potions.quantity)
+        new_num_green_potions = current_num_green_potions - potion.quantity
+        new_num_green_ml = current_num_green_ml - (100 * potion.quantity )
 
-        update_query = sqlalchemy.text(
-            """
-            UPDATE global_inventory
-            SET num_green_potions = :new_num_green_potions,
-                num_green_ml = :new_num_green_ml
-            """
-        )
-
-        update_params = {
-            'new_num_green_potions': new_num_green_potions,
-            'new_num_green_ml': new_num_green_ml
-        }
-        connection.execute(update_query, **update_params)
+        connection.execute(sqlalchemy.text(f"UPDATE global_inventory SET num_green_potions = {new_num_green_potions}, num_green_ml = {new_num_green_ml}"))
