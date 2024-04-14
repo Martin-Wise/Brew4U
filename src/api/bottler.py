@@ -41,7 +41,7 @@ def get_bottle_plan():
         num_green_ml = result.fetchone()[0]
 
     if num_green_ml > 100:
-        quant_green : int = num_green_ml / 100
+        quant_green = int(num_green_ml / 100)
         return [
             {
                 "potion_type": [0, 100, 0, 0],
