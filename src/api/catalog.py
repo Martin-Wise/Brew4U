@@ -11,8 +11,8 @@ def get_catalog():
     Each unique item combination must have only a single price.
     """
     with db.engine.begin() as connection:
-        result = connection.execute("SELECT num_green_potions FROM global_inventory ORDER BY created_at DESC LIMIT 1")
-        num_green_potions = result.fetchone()['num_green_potions']
+        result = connection.execute("SELECT num_green_potions FROM global_inventory")
+        num_green_potions = result.fetchone()[0]
     
     return [
             {
