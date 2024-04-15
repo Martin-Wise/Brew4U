@@ -12,7 +12,7 @@ def get_catalog():
     """
     with db.engine.begin() as connection:
         result = connection.execute("SELECT num_green_potions FROM global_inventory")
-        num_green_potions = result.fetchone()[0]
+        num_green_potions = result.fetchone()[0] 
     
     return [
             {

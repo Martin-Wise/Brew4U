@@ -88,7 +88,6 @@ def transfer_to_global_inventory(barrel: Barrel):
         new_num_green_ml = current_num_green_ml + barrel.ml_per_barrel
 
         connection.execute(sqlalchemy.text(f"UPDATE global_inventory SET gold = {new_gold_ammount}, num_green_ml = {new_num_green_ml}"))
-        #connection.execute(sqlalchemy.text(f"UPDATE global_inventory SET num_green_ml = {new_num_green_ml}"))
         
 
 
