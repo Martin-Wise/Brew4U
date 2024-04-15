@@ -70,10 +70,7 @@ def get_green_ml():
         result = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM global_inventory"))
         num_green_ml = result.fetchone()[0]
         print("num_green_ml: ", num_green_ml)
-        if num_green_ml > 0:
-            return num_green_ml
-        else:
-            return 0  
+        return num_green_ml  
 
 
 def transfer_to_global_inventory(potion: PotionInventory):
@@ -85,6 +82,6 @@ def transfer_to_global_inventory(potion: PotionInventory):
         new_num_green_potions = current_num_green_potions + potion.quantity
         new_num_green_ml = current_num_green_ml - (100 * potion.quantity)
         print("new_num_green_ml: ", new_num_green_ml)
-        print(100-potion.quantity)
+        print(100*potion.quantity)
 
         connection.execute(sqlalchemy.text(f"UPDATE global_inventory SET num_green_potions = {new_num_green_potions}, num_green_ml = {new_num_green_ml}"))
