@@ -39,49 +39,81 @@ def get_bottle_plan():
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM global_inventory"))
         num_green_ml = result.fetchone()[0]
+        result = connection.execute(sqlalchemy.text("SELECT num_red_ml FROM global_inventory"))
+        num_red_ml = result.fetchone()[0]
+        result = connection.execute(sqlalchemy.text("SELECT num_blue_ml FROM global_inventory"))
+        num_blue_ml = result.fetchone()[0]
+
+    output = []
 
     if num_green_ml > 100:
         quant_green = int(num_green_ml / 100)
-        return [
+        output.append(
             {
                 "potion_type": [0, 100, 0, 0],
                 "quantity": quant_green
             }
-        ]
+        )
 
-    else :
-        return []
+    if num_red_ml > 100:
+        quant_red = int(num_red_ml / 100)
+        output.append(
+            {
+                "potion_type": [100, 0, 0, 0],
+                "quantity": quant_red
+            }
+        )
+
+    if num_blue_ml > 100:
+        quant_blue = int(num_blue_ml / 100)
+        output.append(
+            {
+                "potion_type": [0, 0, 100, 0],
+                "quantity": quant_blue
+            })
+    
+    return output
 
 if __name__ == "__main__":
     print(get_bottle_plan())
 
-def get_num_green_potions():
+def get_num_potions(r, g, b, d):
     with db.engine.begin() as connection:
-        result = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory"))
-        num_green_potions = result.fetchone()[0]
-        #print("num_green_potions: ", num_green_potions)
-        if num_green_potions > 0:
-            return num_green_potions
-        else:
+        result = connection.execute(sqlalchemy.text(f"SELECT num FROM potion_inventory WHERE R = {r} AND G = {g} AND B = {b} AND D = {d}"))
+        num_potion = result.fetchone()
+        if num_potion:
+            return num_potion[0]
+        else:   
             return 0
 
-def get_green_ml():
+def get_ml(color):
     with db.engine.begin() as connection:
-        result = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM global_inventory"))
-        num_green_ml = result.fetchone()[0]
-        #print("num_green_ml: ", num_green_ml)
-        return num_green_ml  
+        result = connection.execute(sqlalchemy.text(f"SELECT num_{color}_ml FROM global_inventory"))
+        num_color_ml = result.fetchone()[0]
+        print(f"num_{color}_ml: ", num_color_ml)
+        if num_color_ml > 0:
+            return num_color_ml
+        else:
+            return 0  
 
 
 def transfer_to_global_inventory(potion: PotionInventory):
     with db.engine.begin() as connection:
         
-        current_num_green_ml = get_green_ml()
-        current_num_green_potions = get_num_green_potions()
+        current_num_green_ml = get_ml("green")
+        current_num_red_ml = get_ml("red")
+        current_num_blue_ml = get_ml("blue")
+        
+        pt = potion.potion_type
+        current_num_potions = get_num_potions(pt[0], pt[1], pt[2], pt[3])
 
-        new_num_green_potions = current_num_green_potions + potion.quantity
-        new_num_green_ml = current_num_green_ml - (100 * potion.quantity)
+        quant = potion.quantity
+        new_num_potions = current_num_potions + quant
+        new_num_green_ml = current_num_green_ml - (pt[1] * quant)
+        new_num_red_ml =  current_num_red_ml - (pt[0] * quant)
+        new_num_blue_ml = current_num_blue_ml - (pt[2] * quant)
         #print("new_num_green_ml: ", new_num_green_ml)
         #print(100*potion.quantity)
 
-        connection.execute(sqlalchemy.text(f"UPDATE global_inventory SET num_green_potions = {new_num_green_potions}, num_green_ml = {new_num_green_ml}"))
+        connection.execute(sqlalchemy.text(f"UPDATE potion_inventory SET num = {new_num_potions} WHERE r = {pt[0]} AND g = {pt[1]} AND b = {pt[2]} AND d = {pt[3]}"))
+        connection.execute(sqlalchemy.text(f"UPDATE global_inventory SET num_green_ml = {new_num_green_ml}, num_red_ml = {new_num_red_ml}, num_blue_ml = {new_num_blue_ml}"))
