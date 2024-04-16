@@ -45,47 +45,49 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
     num_blue_potions = get_num_potions(0, 0, 100, 0)
     num_gold = get_gold()
 
-    print(num_green_potions)
-    print(num_blue_potions)
-    print(num_green_potions)
+    print("num_green_potions", num_green_potions)
+    print("num_blue_potions", num_blue_potions)
+    print("num_green_poitons", num_green_potions)
 
     if num_green_potions < 5:
         for barrel in wholesale_catalog:
             if not bought_green and barrel.sku == "SMALL_GREEN_BARREL" and barrel.quantity > 0 and num_gold >= barrel.price:
                 bought_green = True
                 num_gold -= barrel.price
-                output.append([
+                output.append(
                     {
                         "sku": barrel.sku,
                         "quantity": 1,
                     }
-                ])
-                
-    elif num_blue_potions < 5:
-        for barrel in wholesale_catalog:
-            if not bought_blue and barrel.sku == "SMALL_BLUE_BARREL" and barrel.quantity > 0 and num_gold >= barrel.price:
-                bought_blue = True
-                num_gold -= barrel.price
-                output += [
-                    {
-                        "sku": barrel.sku,
-                        "quantity": 1,
-                    }
-                ]
+                )
 
-    elif num_red_potions < 5:
+    if num_red_potions < 5:
         for barrel in wholesale_catalog:
             if not bought_red and barrel.sku == "SMALL_RED_BARREL" and barrel.quantity > 0 and num_gold >= barrel.price:
                 bought_red = True
                 num_gold -= barrel.price
-                output += [
+                output.append(
                     {
                         "sku": barrel.sku,
                         "quantity": 1,
                     }
-                ]    
-    else:
-        return []
+                ) 
+
+    if num_blue_potions < 5:
+        for barrel in wholesale_catalog:
+            if not bought_blue and barrel.sku == "SMALL_BLUE_BARREL" and barrel.quantity > 0 and num_gold >= barrel.price:
+                bought_blue = True
+                num_gold -= barrel.price
+                output.append(
+                    {
+                        "sku": barrel.sku,
+                        "quantity": 1,
+                    }
+                )
+
+      
+
+    print(output)
     return output
 
 def get_num_potions(r, g, b, d):
