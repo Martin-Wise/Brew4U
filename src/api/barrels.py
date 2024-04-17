@@ -133,9 +133,9 @@ def transfer_to_global_inventory(barrel: Barrel):
         
 def barrel_color(barrel: Barrel):
     print("barrel.potion_type: ", barrel.potion_type)
-    if(barrel.potion_type[0] == 100): return "red"
-    elif(barrel.potion_type[1] == 100): return "green"
-    elif(barrel.potion_type[2] == 100): return "blue"
+    if(barrel.potion_type[0] == 1): return "red"
+    elif(barrel.potion_type[1] == 1): return "green"
+    elif(barrel.potion_type[2] == 1): return "blue"
     else: return "dark" 
 
 
