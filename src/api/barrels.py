@@ -39,15 +39,18 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
     bought_green = False
     bought_blue = False
     bought_red = False
+    bought_dark = False
 
-    num_green_potions = get_num_potions(0, 100, 0, 0)
     num_red_potions = get_num_potions(100, 0, 0, 0)
+    num_green_potions = get_num_potions(0, 100, 0, 0)
     num_blue_potions = get_num_potions(0, 0, 100, 0)
+    num_dark_potions = get_num_potions(0, 0, 0, 100)
     num_gold = get_gold()
 
+    print("num_red_potions", num_red_potions)
     print("num_green_potions", num_green_potions)
     print("num_blue_potions", num_blue_potions)
-    print("num_green_poitons", num_green_potions)
+    print("num_dark_poitons", num_dark_potions)
 
     if num_green_potions < 5:
         for barrel in wholesale_catalog:
@@ -84,6 +87,20 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
                         "quantity": 1,
                     }
                 )
+
+    if num_dark_potions < 5:
+        for barrel in wholesale_catalog:
+            if not bought_dark and barrel.sku == "SMALL_DARK_BARREL" and barrel.quantity > 0 and num_gold >= barrel.price:
+                bought_blue = True
+                num_gold -= barrel.price
+                output.append(
+                    {
+                        "sku": barrel.sku,
+                        "quantity": 1,
+                    }
+                )
+    
+    
 
       
 
@@ -137,5 +154,3 @@ def barrel_color(barrel: Barrel):
     elif(barrel.potion_type[1] == 1): return "green"
     elif(barrel.potion_type[2] == 1): return "blue"
     else: return "dark" 
-
-

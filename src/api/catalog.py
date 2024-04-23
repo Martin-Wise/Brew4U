@@ -13,6 +13,8 @@ def get_catalog():
     num_red_potions = get_num_potions(100, 0, 0, 0)
     num_green_potions = get_num_potions(0, 100, 0, 0)
     num_blue_potions = get_num_potions(0, 0, 100, 0)
+    num_purple_potions = get_num_potions(50, 0, 50, 0)
+
 
     output = []
 
@@ -42,7 +44,16 @@ def get_catalog():
                 "quantity": num_green_potions,
                 "price": 60,
                 "potion_type": [0, 0, 100, 0],
-            }) 
+            })
+    if (num_purple_potions > 0):
+        output.append(
+            {
+                "sku": "PURPLE_POTION",
+                "name": "Full Regen Potion",
+                "quantity": num_purple_potions,
+                "price": 75,
+                "potion_type": [50, 0, 50, 0],
+            })
 
     return output
 

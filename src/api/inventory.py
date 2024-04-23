@@ -19,16 +19,13 @@ def get_inventory():
     gold = 0
 
     with db.engine.begin() as connection:
-        cur_gold = connection.execute(sqlalchemy.text("SELECT gold FROM global_inventory"))
-        gold = cur_gold.fetchone()[0]
-        
-        red_ml = connection.execute(sqlalchemy.text("SELECT num_red_ml FROM global_inventory"))
-        ml_in_barrels += red_ml.fetchone()[0]
-        green_ml = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM global_inventory"))
-        ml_in_barrels += green_ml.fetchone()[0]
-        blue_ml = connection.execute(sqlalchemy.text("SELECT num_blue_ml FROM global_inventory"))
-        ml_in_barrels += blue_ml.fetchone()[0]
+        result = connection.execute(sqlalchemy.text("SELECT num_green_ml, num_red_ml, num_blue_ml, num_dark_ml, gold FROM global_inventory"))
+        red_ml, green_ml, blue_ml, dark_ml, gold = result.fetchone()
 
+        ml_in_barrels = red_ml + green_ml + blue_ml + dark_ml
+
+        print(f"red_ml: {red_ml}, green_ml: {green_ml}, blue_ml: {blue_ml}, dark_ml: {dark_ml}")
+        print(f"gold: {gold}")
         all_potions = connection.execute(sqlalchemy.text("SELECT num FROM potion_inventory"))
         for potion in all_potions:
             number_of_potions += potion[0]
