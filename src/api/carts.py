@@ -107,9 +107,9 @@ def create_cart(new_cart: Customer):
     name = new_cart.customer_name
 
     with db.engine.begin() as connection:
-        result = connection.execute(sqlalchemy.text("INSERT INTO carts (customer_name) VALUES (:cust_name) RETURNING cart_id"), [{"cust_name": name}]) 
+        result = connection.execute(sqlalchemy.text("INSERT INTO carts (customer_name) VALUES (:cust_name) RETURNING cart_id"), {"cust_name": name}) 
         cart_id = result.scalar()
-        connection.execute(sqlalchemy.text(f"UPDATE customers_info SET cart_id = :cart_id WHERE customers_info.name = :cust_name"), [{"cart_id": cart_id, "cust_name": name}])
+        connection.execute(sqlalchemy.text("UPDATE customers_info SET cart_id = :cart_id WHERE customers_info.name = :cust_name"), {"cart_id": cart_id, "cust_name": name})
     return {"cart_id": cart_id}
 
 
@@ -124,7 +124,7 @@ def set_item_quantity(cart_id: int, item_sku: str, cart_item: CartItem):
 
     with db.engine.begin() as connection:
         connection.execute(sqlalchemy.text("INSERT INTO cart_items (cart_id, sku, quantity) VALUES (:cart_id, :sku, :quantity)"), 
-                           [{"cart_id": cart_id, "sku": item_sku, "quantity": cart_item.quantity}])
+                           {"cart_id": cart_id, "sku": item_sku, "quantity": cart_item.quantity})
    
     return "OK"
 
