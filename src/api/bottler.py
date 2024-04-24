@@ -52,6 +52,7 @@ def get_bottle_plan():
 
     if num_red_ml >= 100:
         quant_red = int(num_red_ml / 100)
+        if (quant_red > 10): quant_red = 10
         output.append(
             {
                 "potion_type": [100, 0, 0, 0],
@@ -61,6 +62,7 @@ def get_bottle_plan():
     
     if num_green_ml >= 100:
         quant_green = int(num_green_ml / 100)
+        if (quant_green > 10): quant_green = 10 
         output.append(
             {
                 "potion_type": [0, 100, 0, 0],
@@ -70,6 +72,7 @@ def get_bottle_plan():
 
     if num_blue_ml >= 100:
         quant_blue = int(num_blue_ml / 100)
+        if (quant_blue > 10): quant_blue = 10
         output.append(
             {
                 "potion_type": [0, 0, 100, 0],
@@ -78,6 +81,7 @@ def get_bottle_plan():
         
     if num_dark_ml >= 100:
         quant_dark = int(num_dark_ml / 100)
+        if(quant_dark > 10): quant_dark = 10
         output.append(
             {
                 "potion_type": [0, 0, 0, 100],
