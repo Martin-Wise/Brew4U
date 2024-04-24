@@ -41,6 +41,8 @@ def get_bottle_plan():
     output = []
 
     if num_red_ml >= 100 and num_blue_ml >= 100:
+        num_red_ml = num_red_ml - 100
+        num_blue_ml = num_blue_ml - 100
         output.append(
             {
                 "potion_type": [50, 0, 50, 0],
@@ -82,6 +84,7 @@ def get_bottle_plan():
                 "quantity": quant_dark
             })
     
+    print("BOTTLER PLAN: ", output)
     return output
 
 if __name__ == "__main__":
